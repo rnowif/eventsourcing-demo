@@ -8,6 +8,8 @@ import com.rnowif.events.domain.parkinglot.events.CarExited;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.LocalTime;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -49,7 +51,7 @@ public class CarCountHandlerTest {
 
     private void enterCars(int nbCars, CarCountHandler handler) {
         for (int i = 0; i < nbCars; i++) {
-            handler.apply(new CarEntered());
+            handler.apply(new CarEntered(LocalTime.now()));
         }
     }
 

@@ -10,6 +10,8 @@ import com.rnowif.events.domain.parkinglot.events.CarExited;
 import com.rnowif.events.infra.SimpleEventBus;
 import org.junit.runner.RunWith;
 
+import java.time.LocalTime;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -30,7 +32,7 @@ public class CarCountFeatureTest {
         ParkingLot parkingLot = new ParkingLot(eventBus);
 
         for (int i = 0; i < nbCarsIn; i++) {
-            parkingLot.enterCar();
+            parkingLot.enterCar(LocalTime.now());
         }
 
         for (int i = 0; i < nbCarsOut; i++) {
