@@ -1,8 +1,10 @@
 package com.rnowif.events.domain.parkinglot.events;
 
+import com.rnowif.events.domain.Event;
+
 import java.time.LocalTime;
 
-public class CarEntered {
+public class CarEntered implements Event {
     private final LocalTime time;
 
     public CarEntered(LocalTime time) {

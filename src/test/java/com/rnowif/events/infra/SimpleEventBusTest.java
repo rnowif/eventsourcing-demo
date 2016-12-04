@@ -1,5 +1,6 @@
 package com.rnowif.events.infra;
 
+import com.rnowif.events.domain.Event;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -10,13 +11,13 @@ import static org.junit.Assert.assertThat;
 
 public class SimpleEventBusTest {
 
-    private class Event {}
+    private class SimpleEvent implements Event {}
 
     @Test
     public void should_not_crash_when_no_callback_registered() {
         SimpleEventBus bus = new SimpleEventBus();
 
-        bus.publish(new Event());
+        bus.publish(new SimpleEvent());
     }
 
     @Test
@@ -24,9 +25,9 @@ public class SimpleEventBusTest {
         List<Event> events = new ArrayList<>();
         SimpleEventBus bus = new SimpleEventBus();
 
-        bus.register(Event.class, events::add);
-        bus.publish(new Event());
-        bus.publish(new Event());
+        bus.register(SimpleEvent.class, events::add);
+        bus.publish(new SimpleEvent());
+        bus.publish(new SimpleEvent());
 
         assertThat(events.size(), is(2));
     }
@@ -37,9 +38,9 @@ public class SimpleEventBusTest {
         List<Event> secondEvents = new ArrayList<>();
         SimpleEventBus bus = new SimpleEventBus();
 
-        bus.register(Event.class, firstEvents::add);
-        bus.register(Event.class, secondEvents::add);
-        bus.publish(new Event());
+        bus.register(SimpleEvent.class, firstEvents::add);
+        bus.register(SimpleEvent.class, secondEvents::add);
+        bus.publish(new SimpleEvent());
 
         assertThat(firstEvents.size(), is(1));
         assertThat(secondEvents.size(), is(1));

@@ -3,6 +3,7 @@ package com.rnowif.events.domain.parkinglot;
 import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.generator.InRange;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
+import com.rnowif.events.domain.Event;
 import com.rnowif.events.domain.parkinglot.events.CarEntered;
 import com.rnowif.events.domain.parkinglot.events.CarExited;
 import org.junit.Before;
@@ -60,7 +61,7 @@ public class ParkingLotTest {
     public void should_throw_exception_when_capacity_exceeded(@InRange(min = "1", max = "100") int capacity) {
         ParkingLot parkingLot = new ParkingLot(
                 capacity, events::add,
-                generateEvents(capacity, () -> new CarEntered(LocalTime.now()))
+                generate(capacity, () -> new CarEntered(LocalTime.now()))
         );
 
         try {
@@ -71,10 +72,8 @@ public class ParkingLotTest {
         }
     }
 
-    private List<Object> generateEvents(int capacity, Supplier<CarEntered> supplier) {
-        return Stream.generate(supplier)
-                    .limit(capacity)
-                    .collect(toList());
+    private List<Event> generate(int count, Supplier<CarEntered> supplier) {
+        return Stream.generate(supplier).limit(count).collect(toList());
     }
 
 }

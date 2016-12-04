@@ -1,4 +1,6 @@
 package com.rnowif.events.domain.parkinglot.events;
 
-public class CarExited {
+import com.rnowif.events.domain.Event;
+
+public class CarExited implements Event {
 }

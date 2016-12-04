@@ -1,5 +1,6 @@
 package com.rnowif.events.domain.parkinglot;
 
+import com.rnowif.events.domain.Event;
 import com.rnowif.events.domain.EventPublisher;
 import com.rnowif.events.domain.parkinglot.events.CarEntered;
 import com.rnowif.events.domain.parkinglot.events.CarExited;
@@ -15,7 +16,7 @@ public class ParkingLot {
 
     private final int capacity;
     private final EventPublisher eventPublisher;
-    private final Map<Class<?>, Consumer<Object>> consumers;
+    private final Map<Class<? extends Event>, Consumer<Event>> consumers;
 
     private final AtomicInteger nbCars = new AtomicInteger(0);
 
@@ -26,7 +27,7 @@ public class ParkingLot {
         this.consumers.put(CarEntered.class, e -> this.apply((CarEntered) e));
     }
 
-    public ParkingLot(int capacity, EventPublisher eventPublisher, List<Object> events) {
+    public ParkingLot(int capacity, EventPublisher eventPublisher, List<Event> events) {
         this(capacity, eventPublisher);
         events.forEach(e -> consumers.getOrDefault(e.getClass(), o -> {}).accept(e));
     }
