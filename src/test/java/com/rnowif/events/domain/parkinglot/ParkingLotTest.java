@@ -12,7 +12,10 @@ import org.junit.runner.RunWith;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -23,16 +26,19 @@ import static org.junit.Assert.fail;
 public class ParkingLotTest {
 
     private List<Object> events;
-    private ParkingLot parkingLot;
 
     @Before
     public void setUp() throws Exception {
         events = new ArrayList<>();
-        parkingLot = new ParkingLot(Integer.MAX_VALUE, events::add);
+    }
+
+    private ParkingLot newParkingLot() {
+        return new ParkingLot(Integer.MAX_VALUE, events::add);
     }
 
     @Property
     public void should_emit_car_entered_event_when_a_car_enters(@InRange (min = "0", max = "23") int hour) {
+        ParkingLot parkingLot = newParkingLot();
         LocalTime time = LocalTime.of(hour, 0);
 
         parkingLot.enterCar(time);
@@ -43,6 +49,7 @@ public class ParkingLotTest {
 
     @Test
     public void should_emit_car_exited_event_when_a_car_exits() {
+        ParkingLot parkingLot = newParkingLot();
         parkingLot.exitCar();
 
         assertThat(events.size(), is(1));
@@ -51,10 +58,10 @@ public class ParkingLotTest {
 
     @Property
     public void should_throw_exception_when_capacity_exceeded(@InRange(min = "1", max = "100") int capacity) {
-        parkingLot = new ParkingLot(capacity, events::add);
-        for (int i = 0; i < capacity; i++) {
-            parkingLot.enterCar(LocalTime.now());
-        }
+        ParkingLot parkingLot = new ParkingLot(
+                capacity, events::add,
+                generateEvents(capacity, () -> new CarEntered(LocalTime.now()))
+        );
 
         try {
             parkingLot.enterCar(LocalTime.now());
@@ -62,6 +69,12 @@ public class ParkingLotTest {
         } catch (CapacityExceeded e) {
             // Expected behavior
         }
+    }
+
+    private List<Object> generateEvents(int capacity, Supplier<CarEntered> supplier) {
+        return Stream.generate(supplier)
+                    .limit(capacity)
+                    .collect(toList());
     }
 
 }

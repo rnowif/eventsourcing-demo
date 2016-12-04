@@ -5,26 +5,44 @@ import com.rnowif.events.domain.parkinglot.events.CarEntered;
 import com.rnowif.events.domain.parkinglot.events.CarExited;
 
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class ParkingLot {
 
     private final int capacity;
     private final EventPublisher eventPublisher;
-    private AtomicInteger nbCars = new AtomicInteger(0);
+    private final Map<Class<?>, Consumer<Object>> consumers;
+
+    private final AtomicInteger nbCars = new AtomicInteger(0);
 
     public ParkingLot(int capacity, EventPublisher eventPublisher) {
         this.capacity = capacity;
         this.eventPublisher = eventPublisher;
+        this.consumers = new HashMap<>();
+        this.consumers.put(CarEntered.class, e -> this.apply((CarEntered) e));
     }
 
-    public synchronized void enterCar(LocalTime entranceTime) {
+    public ParkingLot(int capacity, EventPublisher eventPublisher, List<Object> events) {
+        this(capacity, eventPublisher);
+        events.forEach(e -> consumers.getOrDefault(e.getClass(), o -> {}).accept(e));
+    }
+
+    private void apply(CarEntered event) {
         if (nbCars.get() >= capacity) {
             throw new CapacityExceeded();
         }
 
         nbCars.incrementAndGet();
-        eventPublisher.publish(new CarEntered(entranceTime));
+    }
+
+    public synchronized void enterCar(LocalTime entranceTime) {
+        CarEntered event = new CarEntered(entranceTime);
+        apply(event);
+        eventPublisher.publish(event);
     }
 
     public synchronized void exitCar() {
