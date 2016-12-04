@@ -7,5 +7,8 @@
 - Ajout d'un contrôle pour la capacité max (Acceptance test)
 - Refactor : Le parking peut être instancié à partir d'événements passés
 
+- Ajout de l'event store avec chargement du parking à partir d'événements
+- Ne pas réémettre les événements passés
+
 - Ajout du calcul du taux de remplissage en fonction de l'heure (Acceptance test)
 - Ajout d'un abonné pour compter les entrées / sortie par heure.

@@ -29,7 +29,7 @@ public class CarCountFeatureTest {
         CarCountHandler handler = new CarCountHandler();
         eventBus.register(CarEntered.class, handler::apply);
         eventBus.register(CarExited.class, handler::apply);
-        ParkingLot parkingLot = new ParkingLot(eventBus);
+        ParkingLot parkingLot = new ParkingLot(Integer.MAX_VALUE, eventBus);
 
         for (int i = 0; i < nbCarsIn; i++) {
             parkingLot.enterCar(LocalTime.now());

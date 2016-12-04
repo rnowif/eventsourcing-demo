@@ -25,7 +25,7 @@ public class FlowPerHourFeatureTest {
         SimpleEventBus eventBus = new SimpleEventBus();
         FlowPerHourHandler handler = new FlowPerHourHandler();
         eventBus.register(CarEntered.class, handler::apply);
-        ParkingLot parkingLot = new ParkingLot(eventBus);
+        ParkingLot parkingLot = new ParkingLot(Integer.MAX_VALUE, eventBus);
 
         for (int i = 0; i < nbCars; i++) {
             parkingLot.enterCar(LocalTime.of(hour, 0));

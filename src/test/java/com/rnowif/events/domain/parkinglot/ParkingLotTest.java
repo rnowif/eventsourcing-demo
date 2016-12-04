@@ -28,7 +28,7 @@ public class ParkingLotTest {
     @Before
     public void setUp() throws Exception {
         events = new ArrayList<>();
-        parkingLot = new ParkingLot(events::add);
+        parkingLot = new ParkingLot(Integer.MAX_VALUE, events::add);
     }
 
     @Property

@@ -13,10 +13,6 @@ public class ParkingLot {
     private final EventPublisher eventPublisher;
     private AtomicInteger nbCars = new AtomicInteger(0);
 
-    public ParkingLot(EventPublisher eventPublisher) {
-        this(Integer.MAX_VALUE, eventPublisher);
-    }
-
     public ParkingLot(int capacity, EventPublisher eventPublisher) {
         this.capacity = capacity;
         this.eventPublisher = eventPublisher;
