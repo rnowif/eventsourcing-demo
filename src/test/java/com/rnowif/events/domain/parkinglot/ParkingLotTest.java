@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -59,10 +58,7 @@ public class ParkingLotTest {
 
     @Property
     public void should_throw_exception_when_capacity_exceeded(@InRange(min = "1", max = "100") int capacity) {
-        ParkingLot parkingLot = new ParkingLot(
-                capacity, events::add,
-                generate(capacity, () -> new CarEntered(LocalTime.now()))
-        );
+        ParkingLot parkingLot = new ParkingLot(capacity, events::add, generateEntrances(capacity));
 
         try {
             parkingLot.enterCar(LocalTime.now());
@@ -72,8 +68,8 @@ public class ParkingLotTest {
         }
     }
 
-    private List<Event> generate(int count, Supplier<CarEntered> supplier) {
-        return Stream.generate(supplier).limit(count).collect(toList());
+    private List<Event> generateEntrances(int count) {
+        return Stream.generate(() -> new CarEntered(LocalTime.now())).limit(count).collect(toList());
     }
 
 }

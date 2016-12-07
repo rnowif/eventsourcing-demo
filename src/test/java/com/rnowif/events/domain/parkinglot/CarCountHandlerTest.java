@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.time.LocalTime;
 
+import static java.util.stream.IntStream.range;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -30,8 +31,8 @@ public class CarCountHandlerTest {
         assumeTrue(nbCarsIn >= nbCarsOut);
         CarCountHandler handler = new CarCountHandler();
 
-        enterCars(nbCarsIn, handler);
-        exitCars(nbCarsOut, handler);
+        range(0, nbCarsIn).forEach(i -> handler.apply(new CarEntered(LocalTime.now())));
+        range(0, nbCarsOut).forEach(i -> handler.apply(new CarExited()));
 
         assertThat(handler.getNbCars(), is(nbCarsIn - nbCarsOut));
     }
@@ -39,20 +40,8 @@ public class CarCountHandlerTest {
     @Test
     public void should_have_zero_cars_when_no_car_and_one_car_exits() {
         CarCountHandler handler = new CarCountHandler();
-        exitCars(1, handler);
+        handler.apply(new CarExited());
         assertThat(handler.getNbCars(), is(0));
-    }
-
-    private void exitCars(int nbCarsOut, CarCountHandler handler) {
-        for (int i = 0; i < nbCarsOut; i++) {
-            handler.apply(new CarExited());
-        }
-    }
-
-    private void enterCars(int nbCars, CarCountHandler handler) {
-        for (int i = 0; i < nbCars; i++) {
-            handler.apply(new CarEntered(LocalTime.now()));
-        }
     }
 
 }

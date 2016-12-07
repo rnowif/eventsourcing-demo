@@ -11,7 +11,9 @@ import com.rnowif.events.infra.SimpleEventBus;
 import org.junit.runner.RunWith;
 
 import java.time.LocalTime;
+import java.util.stream.IntStream;
 
+import static java.util.stream.IntStream.range;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -25,21 +27,28 @@ public class CarCountFeatureTest {
             @InRange(min = "0", max = "100") int nbCarsOut
     ) {
         assumeTrue(nbCarsIn >= nbCarsOut);
-        SimpleEventBus eventBus = new SimpleEventBus();
+        SimpleEventBus eventBus = eventBus();
+        CarCountHandler handler = carCountHandler(eventBus);
+        ParkingLot parkingLot = parkingLot(eventBus);
+
+        range(0, nbCarsIn).forEach(i -> parkingLot.enterCar(LocalTime.now()));
+        range(0, nbCarsOut).forEach(i -> parkingLot.exitCar());
+
+        assertThat(handler.getNbCars(), is(nbCarsIn - nbCarsOut));
+    }
+
+    private SimpleEventBus eventBus() {
+        return new SimpleEventBus();
+    }
+
+    private CarCountHandler carCountHandler(SimpleEventBus eventBus) {
         CarCountHandler handler = new CarCountHandler();
         eventBus.register(CarEntered.class, handler::apply);
         eventBus.register(CarExited.class, handler::apply);
-        ParkingLot parkingLot = new ParkingLot(Integer.MAX_VALUE, eventBus);
+        return handler;
+    }
 
-        for (int i = 0; i < nbCarsIn; i++) {
-            parkingLot.enterCar(LocalTime.now());
-        }
-
-        for (int i = 0; i < nbCarsOut; i++) {
-            parkingLot.exitCar();
-        }
-
-        assertThat(handler.getNbCars(), is(nbCarsIn - nbCarsOut));
-
+    private ParkingLot parkingLot(SimpleEventBus eventBus) {
+        return new ParkingLot(Integer.MAX_VALUE, eventBus);
     }
 }
