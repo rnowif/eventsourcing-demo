@@ -3,48 +3,44 @@ package com.rnowif.events.features;
 import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.generator.InRange;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
-import com.rnowif.events.domain.parkinglot.CarCountHandler;
 import com.rnowif.events.domain.parkinglot.ParkingLot;
 import com.rnowif.events.domain.parkinglot.ParkingLotId;
 import com.rnowif.events.domain.parkinglot.events.CarEntered;
-import com.rnowif.events.domain.parkinglot.events.CarExited;
+import com.rnowif.events.domain.parkinglot.FlowPerHourHandler;
 import com.rnowif.events.infra.SimpleEventBus;
 import org.junit.runner.RunWith;
 
 import java.time.LocalTime;
+import java.util.stream.IntStream;
 
-import static java.util.stream.IntStream.range;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 @RunWith(JUnitQuickcheck.class)
-public class CarCountFeatureTest {
+public class ComputeFlowPerHourFeatureTest {
     
     @Property
-    public void should_count_cars_when_entering_and_exiting(
-            @InRange(min = "0", max = "100") int nbCarsIn,
-            @InRange(min = "0", max = "100") int nbCarsOut
+    public void should_compute_filling_rate_for_every_hours(
+            @InRange (min = "0", max = "100") int nbCars,
+            @InRange (min = "0", max = "23") int hour
     ) {
-        assumeTrue(nbCarsIn >= nbCarsOut);
         SimpleEventBus eventBus = eventBus();
-        CarCountHandler handler = carCountHandler(eventBus);
+        FlowPerHourHandler handler = flowPerHourHandler(eventBus);
         ParkingLot parkingLot = parkingLot(eventBus);
 
-        range(0, nbCarsIn).forEach(i -> parkingLot.enterCar(LocalTime.now()));
-        range(0, nbCarsOut).forEach(i -> parkingLot.exitCar());
+        IntStream.range(0, nbCars).forEach(i -> parkingLot.enterCar(LocalTime.of(hour, 0)));
 
-        assertThat(handler.getNbCars(), is(nbCarsIn - nbCarsOut));
+        assertThat(handler.getFor(hour), is(nbCars));
+        assertThat(handler.getFor(hour + 1 % 24), is(0));
     }
 
     private SimpleEventBus eventBus() {
         return new SimpleEventBus();
     }
 
-    private CarCountHandler carCountHandler(SimpleEventBus eventBus) {
-        CarCountHandler handler = new CarCountHandler();
+    private FlowPerHourHandler flowPerHourHandler(SimpleEventBus eventBus) {
+        FlowPerHourHandler handler = new FlowPerHourHandler();
         eventBus.register(CarEntered.class, handler::apply);
-        eventBus.register(CarExited.class, handler::apply);
         return handler;
     }
 
