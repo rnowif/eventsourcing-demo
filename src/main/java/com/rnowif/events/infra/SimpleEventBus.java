@@ -1,8 +1,6 @@
 package com.rnowif.events.infra;
 
-import com.rnowif.events.domain.Event;
-import com.rnowif.events.domain.EventPublisher;
-import com.rnowif.events.domain.EventRegistrar;
+import com.rnowif.events.domain.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +13,14 @@ import static java.util.Collections.emptyList;
 public class SimpleEventBus implements EventPublisher, EventRegistrar {
 
     private final Map<Class<? extends Event>, List<Consumer<Event>>> handlers;
+    private final EventStore eventStore;
 
     public SimpleEventBus() {
+        this(new NoopEventStore());
+    }
+
+    public SimpleEventBus(EventStore eventStore) {
+        this.eventStore = eventStore;
         handlers = new HashMap<>();
     }
 
@@ -28,7 +32,9 @@ public class SimpleEventBus implements EventPublisher, EventRegistrar {
 
     @Override
     public void publish(Event event) {
+        eventStore.save(event);
         handlers.getOrDefault(event.getClass(), emptyList())
                 .forEach(handler -> handler.accept(event));
     }
+
 }
