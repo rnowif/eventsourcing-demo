@@ -6,17 +6,19 @@ import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import com.rnowif.events.domain.Event;
 import com.rnowif.events.domain.parkinglot.events.CarEntered;
 import com.rnowif.events.domain.parkinglot.events.CarExited;
+import com.rnowif.events.domain.parkinglot.events.ParkingLotCreated;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.time.Instant;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static com.rnowif.events.domain.parkinglot.ParkingLotId.of;
+import static java.time.Instant.now;
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -32,9 +34,17 @@ public class ParkingLotTest {
     public void setUp() throws Exception {
         events = new ArrayList<>();
     }
+    
+    @Property
+    public void should_emit_event_on_creation(@InRange(min = "0", max = "100") int capacity) {
+        ParkingLot.create(of(1L), capacity, events::add);
+
+        assertThat(events.size(), is(1));
+        assertThat(((ParkingLotCreated) events.get(0)).getCapacity(), is(capacity));
+    }
 
     private ParkingLot newParkingLot() {
-        return new ParkingLot(of(1L), Integer.MAX_VALUE, events::add);
+        return ParkingLot.fromEvents(events::add, asList(new ParkingLotCreated(of(1L), now(), Integer.MAX_VALUE)));
     }
 
     @Property
@@ -59,7 +69,12 @@ public class ParkingLotTest {
 
     @Property
     public void should_throw_exception_when_capacity_exceeded(@InRange(min = "1", max = "100") int capacity) {
-        ParkingLot parkingLot = new ParkingLot(of(1L), capacity, events::add, generateEntrances(capacity));
+        List<Event> events = Stream.concat(
+                Stream.of(new ParkingLotCreated(of(1L), now(), capacity)),
+                generateEntrances(capacity).stream()
+        ).collect(toList());
+
+        ParkingLot parkingLot = ParkingLot.fromEvents(e -> {}, events);
 
         try {
             parkingLot.enterCar(LocalTime.now());
@@ -70,7 +85,7 @@ public class ParkingLotTest {
     }
 
     private List<Event> generateEntrances(int count) {
-        return Stream.generate(() -> new CarEntered(of(1L), Instant.now(), LocalTime.now()))
+        return Stream.generate(() -> new CarEntered(of(1L), now(), LocalTime.now()))
                 .limit(count).collect(toList());
     }
 

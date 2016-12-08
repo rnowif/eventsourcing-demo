@@ -49,6 +49,6 @@ public class CountCarFeatureTest {
     }
 
     private ParkingLot parkingLot(SimpleEventBus eventBus) {
-        return new ParkingLot(ParkingLotId.of(1L), Integer.MAX_VALUE, eventBus);
+        return ParkingLot.create(ParkingLotId.of(1L), Integer.MAX_VALUE, eventBus);
     }
 }
