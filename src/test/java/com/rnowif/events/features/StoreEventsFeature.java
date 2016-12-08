@@ -2,7 +2,7 @@ package com.rnowif.events.features;
 
 import com.rnowif.events.domain.Event;
 import com.rnowif.events.domain.EventStore;
-import com.rnowif.events.fixtures.SimpleEvent;
+import com.rnowif.events.fixtures.FakeEvent;
 import com.rnowif.events.infra.InMemoryEventStore;
 import com.rnowif.events.infra.SimpleEventBus;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class StoreEventsFeature {
         EventStore eventStore = new InMemoryEventStore();
         SimpleEventBus eventBus = new SimpleEventBus(eventStore);
 
-        SimpleEvent event = new SimpleEvent(SimpleEvent.Id.of(1L));
+        FakeEvent event = new FakeEvent(FakeEvent.Id.of(1L));
         eventBus.publish(event);
 
         List<Event> eventsOfEntity = eventStore.getByEntity(event.getEntityId());

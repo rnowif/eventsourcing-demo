@@ -4,7 +4,7 @@ import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.generator.InRange;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import com.rnowif.events.domain.Event;
-import com.rnowif.events.fixtures.SimpleEvent;
+import com.rnowif.events.fixtures.FakeEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,7 +20,7 @@ public class InMemoryEventStoreTest {
     @Test
     public void should_get_no_event_where_none_is_stored() {
         InMemoryEventStore eventStore = new InMemoryEventStore();
-        assertThat(eventStore.getByEntity(SimpleEvent.Id.of(1L)).size(), is(0));
+        assertThat(eventStore.getByEntity(FakeEvent.Id.of(1L)).size(), is(0));
     }
     
     @Property
@@ -30,8 +30,8 @@ public class InMemoryEventStoreTest {
     ) {
         InMemoryEventStore eventStore = new InMemoryEventStore();
 
-        SimpleEvent.Id id = SimpleEvent.Id.of(idValue);
-        range(0, nbEvents).forEach(i -> eventStore.save(new SimpleEvent(id)));
+        FakeEvent.Id id = FakeEvent.Id.of(idValue);
+        range(0, nbEvents).forEach(i -> eventStore.save(new FakeEvent(id)));
 
         List<Event> eventsOfEntity = eventStore.getByEntity(id);
         assertThat(eventsOfEntity.size(), is(nbEvents));

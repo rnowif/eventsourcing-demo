@@ -5,7 +5,7 @@ import com.rnowif.events.domain.Event;
 
 import java.time.Instant;
 
-public class SimpleEvent implements Event {
+public class FakeEvent implements Event {
 
     private final Id id;
     private final Instant eventTime;
@@ -37,7 +37,7 @@ public class SimpleEvent implements Event {
         }
     }
 
-    public SimpleEvent(Id id) {
+    public FakeEvent(Id id) {
         this.id = id;
         this.eventTime = Instant.now();
     }

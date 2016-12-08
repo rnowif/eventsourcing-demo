@@ -1,7 +1,7 @@
 package com.rnowif.events.infra;
 
 import com.rnowif.events.domain.Event;
-import com.rnowif.events.fixtures.SimpleEvent;
+import com.rnowif.events.fixtures.FakeEvent;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class SimpleEventBusTest {
         List<Event> events = new ArrayList<>();
         SimpleEventBus bus = new SimpleEventBus();
 
-        bus.register(SimpleEvent.class, events::add);
+        bus.register(FakeEvent.class, events::add);
         bus.publish(event(1L));
         bus.publish(event(2L));
 
@@ -37,15 +37,15 @@ public class SimpleEventBusTest {
         List<Event> secondEvents = new ArrayList<>();
         SimpleEventBus bus = new SimpleEventBus();
 
-        bus.register(SimpleEvent.class, firstEvents::add);
-        bus.register(SimpleEvent.class, secondEvents::add);
+        bus.register(FakeEvent.class, firstEvents::add);
+        bus.register(FakeEvent.class, secondEvents::add);
         bus.publish(event(1L));
 
         assertThat(firstEvents.size(), is(1));
         assertThat(secondEvents.size(), is(1));
     }
 
-    private SimpleEvent event(long id) {
-        return new SimpleEvent(SimpleEvent.Id.of(id));
+    private FakeEvent event(long id) {
+        return new FakeEvent(FakeEvent.Id.of(id));
     }
 }
