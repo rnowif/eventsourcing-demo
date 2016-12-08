@@ -8,8 +8,10 @@ import com.rnowif.events.domain.parkinglot.events.CarExited;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.Instant;
 import java.time.LocalTime;
 
+import static com.rnowif.events.domain.parkinglot.ParkingLotId.of;
 import static java.util.stream.IntStream.range;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -31,8 +33,8 @@ public class CarCountHandlerTest {
         assumeTrue(nbCarsIn >= nbCarsOut);
         CarCountHandler handler = new CarCountHandler();
 
-        range(0, nbCarsIn).forEach(i -> handler.apply(new CarEntered(LocalTime.now())));
-        range(0, nbCarsOut).forEach(i -> handler.apply(new CarExited()));
+        range(0, nbCarsIn).forEach(i -> handler.apply(new CarEntered(of(1L), Instant.now(), LocalTime.now())));
+        range(0, nbCarsOut).forEach(i -> handler.apply(new CarExited(of(1L), Instant.now())));
 
         assertThat(handler.getNbCars(), is(nbCarsIn - nbCarsOut));
     }
@@ -40,7 +42,7 @@ public class CarCountHandlerTest {
     @Test
     public void should_have_zero_cars_when_no_car_and_one_car_exits() {
         CarCountHandler handler = new CarCountHandler();
-        handler.apply(new CarExited());
+        handler.apply(new CarExited(of(1L), Instant.now()));
         assertThat(handler.getNbCars(), is(0));
     }
 

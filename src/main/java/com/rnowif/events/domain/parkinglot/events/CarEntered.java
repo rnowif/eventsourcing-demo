@@ -1,33 +1,35 @@
 package com.rnowif.events.domain.parkinglot.events;
 
+import com.rnowif.events.domain.EntityId;
 import com.rnowif.events.domain.Event;
+import com.rnowif.events.domain.parkinglot.ParkingLotId;
 
+import java.time.Instant;
 import java.time.LocalTime;
 
 public class CarEntered implements Event {
-    private final LocalTime time;
 
-    public CarEntered(LocalTime time) {
-        this.time = time;
+    private final ParkingLotId parkingLotId;
+    private final Instant eventTime;
+    private final LocalTime entranceTime;
+
+    public CarEntered(ParkingLotId parkingLotId, Instant eventTime, LocalTime entranceTime) {
+        this.parkingLotId = parkingLotId;
+        this.eventTime = eventTime;
+        this.entranceTime = entranceTime;
     }
 
-    public LocalTime getTime() {
-        return time;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CarEntered that = (CarEntered) o;
-
-        return time.equals(that.time);
-
+    public LocalTime getEntranceTime() {
+        return entranceTime;
     }
 
     @Override
-    public int hashCode() {
-        return time.hashCode();
+    public EntityId getEntityId() {
+        return parkingLotId;
+    }
+
+    @Override
+    public Instant getTimestamp() {
+        return eventTime;
     }
 }

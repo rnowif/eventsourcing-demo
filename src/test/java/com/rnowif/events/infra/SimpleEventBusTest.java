@@ -1,8 +1,10 @@
 package com.rnowif.events.infra;
 
+import com.rnowif.events.domain.EntityId;
 import com.rnowif.events.domain.Event;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,20 @@ import static org.junit.Assert.assertThat;
 
 public class SimpleEventBusTest {
 
-    private class SimpleEvent implements Event {}
+    private class SimpleEvent implements Event {
+
+        private class Id implements EntityId {}
+
+        @Override
+        public EntityId getEntityId() {
+            return new Id();
+        }
+
+        @Override
+        public Instant getTimestamp() {
+            return Instant.now();
+        }
+    }
 
     @Test
     public void should_not_crash_when_no_callback_registered() {

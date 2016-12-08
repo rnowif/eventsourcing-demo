@@ -7,8 +7,10 @@ import com.rnowif.events.domain.parkinglot.events.CarEntered;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.Instant;
 import java.time.LocalTime;
 
+import static com.rnowif.events.domain.parkinglot.ParkingLotId.of;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -29,7 +31,7 @@ public class FlowPerHourHandlerTest {
         FlowPerHourHandler handler = new FlowPerHourHandler();
 
         for (int i = 0; i < nbCars; i++) {
-            handler.apply(new CarEntered(LocalTime.of(hour, 0)));
+            handler.apply(new CarEntered(of(1L), Instant.now(), LocalTime.of(hour, 0)));
         }
 
         assertThat(handler.getFor(hour), is(nbCars));

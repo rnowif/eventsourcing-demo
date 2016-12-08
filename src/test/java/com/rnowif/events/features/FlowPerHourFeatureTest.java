@@ -4,6 +4,7 @@ import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.generator.InRange;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import com.rnowif.events.domain.parkinglot.ParkingLot;
+import com.rnowif.events.domain.parkinglot.ParkingLotId;
 import com.rnowif.events.domain.parkinglot.events.CarEntered;
 import com.rnowif.events.domain.parkinglot.FlowPerHourHandler;
 import com.rnowif.events.infra.SimpleEventBus;
@@ -44,6 +45,6 @@ public class FlowPerHourFeatureTest {
     }
 
     private ParkingLot parkingLot(SimpleEventBus eventBus) {
-        return new ParkingLot(Integer.MAX_VALUE, eventBus);
+        return new ParkingLot(ParkingLotId.of(1L), Integer.MAX_VALUE, eventBus);
     }
 }

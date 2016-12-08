@@ -5,13 +5,13 @@ import com.pholser.junit.quickcheck.generator.InRange;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import com.rnowif.events.domain.parkinglot.CarCountHandler;
 import com.rnowif.events.domain.parkinglot.ParkingLot;
+import com.rnowif.events.domain.parkinglot.ParkingLotId;
 import com.rnowif.events.domain.parkinglot.events.CarEntered;
 import com.rnowif.events.domain.parkinglot.events.CarExited;
 import com.rnowif.events.infra.SimpleEventBus;
 import org.junit.runner.RunWith;
 
 import java.time.LocalTime;
-import java.util.stream.IntStream;
 
 import static java.util.stream.IntStream.range;
 import static org.hamcrest.core.Is.is;
@@ -49,6 +49,6 @@ public class CarCountFeatureTest {
     }
 
     private ParkingLot parkingLot(SimpleEventBus eventBus) {
-        return new ParkingLot(Integer.MAX_VALUE, eventBus);
+        return new ParkingLot(ParkingLotId.of(1L), Integer.MAX_VALUE, eventBus);
     }
 }
